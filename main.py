@@ -1,4 +1,4 @@
-# Clustering Algorithm for Community Detection
+# Spectral Clustering Algorithm for Community Detection
 # Using Graph Laplacian Eigenvectors
 # Code writer: Nooshin Bahador
 
@@ -9,7 +9,6 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 
-
 # -----------------------------------
 # Generating random graph
 
@@ -17,29 +16,25 @@ G = nx.random_geometric_graph(50, 0.4)
 nodes=G.nodes
 edges=G.edges
 
-G.add_nodes_from(nodes)
-G.add_edges_from(edges)
-
-
 # -----------------------------------
 # Adjacency matrix
-A = nx.to_numpy_array(G)
+Adj = nx.to_numpy_array(G)
 
 # Diagonal matrix of node degrees
-D = np.diag(A.sum(axis=1))
+Diag = np.diag(Adj.sum(axis=1))
 
 # -----------------------------------
 # Computing graph laplacian
 # Ref: https://www.frontiersin.org/articles/10.3389/fncom.2013.00189/full
 
-Lprim=np.zeros(A.shape)
-print(Lprim)
+Lprim=np.zeros(Adj.shape)
+
 for i in nodes:
     for j in nodes:
         if i==j:
             Lprim[i,j]=1
-        elif A[i,j]==1:
-            Lprim[i,j]=-1/D[i,i]
+        elif Adj[i,j]==1:
+            Lprim[i,j]=-1/Diag[i,i]
         else:
             Lprim[i,j]=0
 
@@ -47,16 +42,14 @@ L=Lprim
 # -------------------------------------
 # Extracting eigen vectors and eigen values
 
-vals,vects = np.linalg.eig(L)
-p = vects
+eigenvalues, eigenvectors = np.linalg.eig(L)
 
 # --------------------------------------------
 # Considering the first and second eigen vectors
 
-values=np.real(p[:,[0,1]])
+values=np.real(eigenvectors[:,[0,1]])
 
-zero_eigen=sum(1 for i in vals if i < 0.0001)
-print(zero_eigen)
+zero_eigen=sum(1 for i in eigenvalues if i < 0.0001)
 kmeans = KMeans(n_clusters=max(2,zero_eigen), random_state=0).fit(values)
 node_color = kmeans.labels_
 
