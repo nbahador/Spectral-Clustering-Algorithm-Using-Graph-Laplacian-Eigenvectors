@@ -12,7 +12,7 @@ from sklearn.cluster import KMeans
 # -----------------------------------
 # Generating random graph
 
-G = nx.random_geometric_graph(50, 0.4)
+G = nx.random_geometric_graph(30, 0.3)
 nodes=G.nodes
 edges=G.edges
 
@@ -52,6 +52,7 @@ values=np.real(eigenvectors[:,[0,1]])
 zero_eigen=sum(1 for i in eigenvalues if i < 0.0001)
 kmeans = KMeans(n_clusters=max(2,zero_eigen), random_state=0).fit(values)
 node_color = kmeans.labels_
+
 
 plt.figure()
 plt.title(f"Results of Community Clustering - Number of clusters: %d" % max(2,zero_eigen))
